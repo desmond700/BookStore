@@ -33,6 +33,18 @@
 	background-size: cover;
 }
 
+/*#leftfold {
+    position: relative;
+    max-width: 800px; /* Maximum width
+    margin: 0 auto;  Center it
+}*/
+
+#leftfold .content {
+    background: rgba(0, 0, 0, 0.5); /* Black background with 0.5 opacity */
+    color: #f1f1f1; /* Grey text */
+    width: 100%; /* Full width */
+    padding: 20px; /* Some padding */
+}
 
 .overlay {
     position: relative;
@@ -66,7 +78,8 @@
 }
 
 .text {
-  background-color: #4CAF50;
+  background-color: #333;
+	opacity: 0.9;
   color: white;
   font-size: 16px;
   padding: 16px 32px;
