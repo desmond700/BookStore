@@ -223,7 +223,7 @@ $(function(){
     viewCount.onsuccess = function(){
       console.log("count request successful: " + viewCount.result);
       if(viewCount.result > 0){
-
+        $('#recentViewed').show();
         objectStore.openCursor().onsuccess = function(event){
           var cursor = event.target.result;
           if(cursor){
