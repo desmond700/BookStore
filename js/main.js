@@ -1,6 +1,92 @@
 
 $(function(){
 
+  var worker = new Worker("js/webWorker.js");
+
+
+  var jsonObj;
+  var genre = "";
+  var hashVal = window.location.hash.substring(1);
+
+  fetch("data/books.json").then((response) => {
+      response.json().then((json) => {
+        jsonObj = json;
+        window.sessionStorage.setItem("json", JSON.stringify(json));
+
+        $.each(json.Books, function (index, element) {
+            var img = $("<img />").attr("style", "height:248px")
+                                  .attr("class", "img-thumbnail")
+                                  .attr("src", "images/bookcover/" + element.img);
+            var anchorImg = $("<a />").attr("href", "./book?title="+element.Title).append(img)
+                                                       .attr("class", "ml-auto mr-auto");
+            var title = $("<p class='txt'></p>").append(element.Title);
+            var author = $("<h6 class='txtg'></h6>").append(element.Author);
+            var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(title);
+            var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
+            var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
+            var parentDiv = $("<div class='viewedItem d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light' data-viewed-item='"+element.Title+"'></div>")
+                            .append(anchorImg, anchorTitle, author, bookType, price);
+
+            $("#bookslib").append(parentDiv);
+
+        })
+      });
+
+      if(hashVal != "")
+        $("select#genreSel").val(hashVal).trigger( "change" );
+
+  })
+
+
+
+  function getVal(value){
+    $("#bkgenre").html(value);
+    $("#bookslib").empty();
+    if(value !== "All"){
+      $.each(jsonObj.Books, function (index, element) {
+          if(value == element.Genre){
+            var img = $("<img />").attr("style", "height:248px")
+                                  .attr("class", "img-thumbnail")
+                                  .attr("src", "images/bookcover/" + element.img);
+            var anchorImg = $("<a />").attr("href", "./book?title="+element.Title).append(img)
+                                                       .attr("class", "ml-auto mr-auto");
+            var title = $("<p class='txt'></p>").append(element.Title);
+            var author = $("<h6 class='txtg'></h6>").append(element.Author);
+            var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(title);
+            var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
+            var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
+            var parentDiv = $("<div class='d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light'></div>")
+                            .append(anchorImg, anchorTitle, author, bookType, price);
+
+            $("#bookslib").append(parentDiv);
+          }
+      })
+    }
+    else{
+      $.each(jsonObj.Books, function (index, element) {
+
+          var img = $("<img />").attr("style", "height:248px")
+                                .attr("class", "img-thumbnail")
+                                .attr("src", "images/bookcover/" + element.img);
+          var anchorImg = $("<a />").attr("href", "./book?title="+element.Title).append(img)
+                                                     .attr("class", "ml-auto mr-auto");
+          var title = $("<p class='txt'></p>").append(element.Title);
+          var author = $("<h6 class='txtg'></h6>").append(element.Author);
+          var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(title);
+          var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
+          var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
+          var parentDiv = $("<div class='d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light'></div>")
+                          .append(anchorImg, anchorTitle, author, bookType, price);
+
+          $("#bookslib").append(parentDiv);
+        })
+    }
+
+  }
+
+
+
+
 
   $("#tabs").tabs();
   // assign a sessionStorage to the CartItems variable
@@ -114,6 +200,7 @@ $(function(){
   		  }
       }
    }
+
 
  // IndexedDB
   if (!window.indexedDB) {
@@ -331,58 +418,12 @@ $(function(){
     // Viewed item event handler
     $("div#bookslib").delegate("div.viewedItem","click",function(){
       var item = $(this).attr("data-viewed-item");
-      let jsonObj = JSON.parse(sessionStorage.getItem("json"));
-      var viewedData;
-
-      $.each(jsonObj.Books, function (index, element) {
-        if(item === element.Title){
-          viewedData = {
-            ISBN: element.ISBN,
-            title: element.Title,
-            author: element.Author,
-            bookType: element["Book Type"],
-            price: element.Price,
-            img: element.img,
-          }
-        }
-      })
-
-      // open a read/write db transaction, ready to add data
-      var transaction = db.transaction(["BooksViewed"], "readwrite");
-
-      // report on the success of opening the transaction
-      transaction.oncomplete = function(event) {
-        //note.innerHTML += '<li>Transaction completed: database modification finished.</li>';
-        var cartVal = $(".itemCnt").html();
-        $(".itemCnt").html(parseInt(cartVal) + 1);
-        console.log("Transaction completed: database modification finished.");
-      };
-
-      transaction.onabort = function(event){
-        console.log("Transaction aborted");
+      //let jsonObj = JSON.parse(sessionStorage.getItem("json"));
+      worker.postMessage(item);
+      worker.onmessage = function(e){
+        console.log("From worker. Item sent: "+e.data);
       }
 
-      transaction.onerror = function(event) {
-        //note.innerHTML += '<li>Transaction not opened due to error. Duplicate items not allowed.</li>';
-        console.log("Transaction not opened due to error. Duplicate items not allowed");
-      };
-
-      // create an object store on the transaction
-      var objectStore = transaction.objectStore("BooksViewed");
-
-      // add our newItem object to the object store
-      var objectStoreRequest = objectStore.add(viewedData);
-
-      objectStoreRequest.onsuccess = function(event) {
-        // report the success of the request (this does not mean the item
-        // has been stored successfully in the DB - for that you need transaction.oncomplete)
-        console.log("objectStore Request successful.");
-      };
-
-      // handles errors that may arise
-      objectStoreRequest.onerror = function(){
-        console.log("adding to object store failed");
-      }
     })
 
     $(".se-pre-con").stop().fadeOut(600);
