@@ -24,7 +24,6 @@
   <!-- Latest compiled JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/main.js"></script>
-  <script type="text/javascript" src="js/ajax.js"></script>
   <?php if(isset($bookscript)) echo $bookscript; ?>
 </head>
 <body>
