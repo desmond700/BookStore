@@ -1,5 +1,7 @@
 // javaScript Document
 
+var IDBTransaction = IDBTransaction || webkitIDBTransaction;
+
 // Open or, if don't exist, Create IndexedDB
 var request = indexedDB.open("Library");
 var db;
@@ -26,7 +28,6 @@ self.onmessage = function(e){
   .then(response => {
     return response.json();
   }).then(json => {
-    self.postMessage("json");
     storeViewedItem(item, json)
   })
 }
@@ -54,16 +55,16 @@ function storeViewedItem(item, json){
   transaction.oncomplete = function(event) {
     //note.innerHTML += '<li>Transaction completed: database modification finished.</li>';
 
-    console.log("Transaction completed: database modification finished.");
+    self.postMessage("Transaction completed: database modification finished.");
   };
 
   transaction.onabort = function(event){
-    console.log("Transaction aborted");
+    self.postMessage("Transaction aborted");
   }
 
   transaction.onerror = function(event) {
     //note.innerHTML += '<li>Transaction not opened due to error. Duplicate items not allowed.</li>';
-    console.log("Transaction not opened due to error. Duplicate items not allowed");
+    self.postMessage("Transaction not opened due to error. Duplicate items not allowed");
   };
 
   // create an object store on the transaction
@@ -72,14 +73,14 @@ function storeViewedItem(item, json){
   // add our newItem object to the object store
   var objectStoreRequest = objectStore.add(viewedData);
 
-  objectStoreRequest.onsuccess = function(event) {
+  objectStoreRequest.oncomplete = function(event) {
     // report the success of the request (this does not mean the item
     // has been stored successfully in the DB - for that you need transaction.oncomplete)
-    console.log("objectStore Request successful.");
+    self.postMessage("Transaction completed successfully. Item stored in database.");
   };
 
   // handles errors that may arise
   objectStoreRequest.onerror = function(){
-    console.log("adding to object store failed");
+    self.postMessage("adding to object store failed");
   }
 }
