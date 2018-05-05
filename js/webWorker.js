@@ -1,44 +1,39 @@
 // javaScript Document
 
-//var json;
+// Open or, if don't exist, Create IndexedDB
+var request = indexedDB.open("Library");
+var db;
 
-//loadDoc();
+request.onsuccess = function(event) {
+   db = event.target.result;
+}
 
-/*function asyncFn(){
-  const works = true;
-  return new Promise(function(resolve, reject){
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          json = this.responseText;
-         }
-      };
-      xhttp.open("GET", "../data/books.json", true);
-      xhttp.send();
-      if(works){
-        resolve(json);
-      }else{
-        reject("Request failed.");
-      }
-    });
-}*/
+// This event is only implemented in recent browsers
+request.onupgradeneeded = function(event) {
+  // Save the IDBDatabase interface
+  var db = event.target.result;
+  // Create an objectStore for this database
+  var objectStore = db.createObjectStore("Books", { keyPath: "ISBN"});
+  // Create an objectStore for this database
+  var booksViewedObjectStore = db.createObjectStore("BooksViewed", { keyPath: "ISBN"});
+}
 
 
 self.onmessage = function(e){
   var item = e.data;
-  //self.postMessage(e.data);
-  fetch("../data/books.json").then((response) => {
-    response.json().then((json) => {
-      self.postMessage(json.Books[0].Title);
-      storeViewedItem(item, json)
-    })
+
+  fetch("../data/books.json")
+  .then(response => {
+    return response.json();
+  }).then(json => {
+    self.postMessage("json");
+    storeViewedItem(item, json)
   })
 }
 
 
 function storeViewedItem(item, json){
   var viewedData;
-
   json.Books.forEach(function (element) {
     if(item === element.Title){
       viewedData = {
