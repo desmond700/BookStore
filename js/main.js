@@ -1,8 +1,8 @@
 
 $(function(){
 
+  // Create web workers
   var worker = new Worker("js/webWorker.js");
-
 
   var jsonObj;
   var genre = "";
@@ -10,6 +10,7 @@ $(function(){
 
   fetch("data/books.json").then((response) => {
       response.json().then((json) => {
+        $(".se-pre-con").stop().fadeOut(600);
         jsonObj = json;
         window.sessionStorage.setItem("json", JSON.stringify(json));
 
@@ -39,7 +40,8 @@ $(function(){
 
 
 
-  function getVal(value){
+  $('select').on('change', function () {
+    var value = $(this).val();
     $("#bkgenre").html(value);
     $("#bookslib").empty();
     if(value !== "All"){
@@ -82,7 +84,7 @@ $(function(){
         })
     }
 
-  }
+  })
 
 
 
@@ -417,14 +419,12 @@ $(function(){
 
     // Viewed item event handler
     $("div#bookslib").delegate("div.viewedItem","click",function(){
-      var item = $(this).attr("data-viewed-item");
-      //let jsonObj = JSON.parse(sessionStorage.getItem("json"));
-      worker.postMessage(item);
-      worker.onmessage = function(e){
-        console.log("From worker. Item sent: "+e.data);
-      }
+        var item = $(this).attr("data-viewed-item");
+        //let jsonObj = JSON.parse(sessionStorage.getItem("json"));
+        worker.onmessage = function(e){
+          console.log("From worker. Item sent: "+e.data);
+        }
+        worker.postMessage(item);
 
     })
-
-    $(".se-pre-con").stop().fadeOut(600);
 })
