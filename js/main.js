@@ -10,12 +10,27 @@ $(function(){
 
   var jsonObj;
   var genre = "";
+  // Gets hash value from url
   var hashVal = window.location.hash.substring(1);
+  // Gets the query variable
+  var titleVar = window.location.search.substring(1,6);
+  // Gets the query variable
+  var qv = window.location.search.substring(1,5);
+  var queryVar = qv.trim();
+  // Gets the query variable
+  var query = window.location.search.substring(6);
+  // Decode url
+  var bookSearch = decodeURIComponent(query.replace(/%20/g, " ").trim());
 
+  // call onmessage on the web worker
   ajaxWorker.onmessage = function(event){
+      // FadeOut page loading gif
       $(".se-pre-con").stop().fadeOut(600);
+      // Store json received from the worker file in jsonObj variable
       jsonObj = event.data.Json;
+      // Pass record count received from the worker file to the html function
       $("i.itemCnt,span.itemCnt").html(event.data.recordCount);
+      // Loop through json object and pass value to the respected jQuery function
       $.each(jsonObj.Books, function (index, element) {
           var img = $("<img />").attr("style", "height:248px")
                                 .attr("class", "img-thumbnail")
@@ -33,19 +48,23 @@ $(function(){
           $("#bookslib").append(parentDiv);
 
       })
-
+      // Pass url hash value to jQuery function if it's not empty
       if(hashVal != "")
         $("select#genreSel").val(hashVal).trigger( "change" );
   }
-
+  // Start web worker
   ajaxWorker.postMessage("fetch");
 
 
-  // Change event handler
+  // Execute function if select option changes
   $('select').on('change', function () {
+    // Store value of option in the value variable
     var value = $(this).val();
+    // Pass value to jQuery function
     $("#bkgenre").html(value);
+    // Empty the html element containing the respected id
     $("#bookslib").empty();
+
     if(value !== "All"){
       $.each(jsonObj.Books, function (index, element) {
           if(value == element.Genre){
@@ -88,14 +107,14 @@ $(function(){
 
   })
 
-  // Fills book page based on query value
-  var query = window.location.search.substring(7);
-  var qs = decodeURI(query.replace(/%20/g, " ").trim());
+  // Fills book page based on query valu
   var json = JSON.parse(sessionStorage.getItem("json"));
-  var titleVar = window.location.search.substring(1,6);
-
+  // If url query variable is title, execute loop function
   if(titleVar === "title"){
+    // Loop through json object pass value to respected jQuery function
     $.each(json.Books, function (index, element) {
+      /* If the value stored in the url title variable is equal to the
+      title of the json object, pass associated values to jQuery functions*/
       if(qs === element.Title){
         var img = $("<img />").height("340")
                               .attr("src", "images/bookcover/"+element.img);
@@ -123,49 +142,43 @@ $(function(){
 
 
 
-  $("#tabs").tabs();
-  // assign a sessionStorage to the CartItems variable
-  var CartItems = window.sessionStorage;
-
+  // Make mobile search bar visible and focused on button click
   $(".searchBtn").click(function(){
     $(this).css("visibility", "hidden");
     $(".mobileSrch").css("visibility", "visible");
       $(".mobileSrch .form-control").focus();
   })
-
+  // Make mobile search bar hidden when out of focus
   $(".mobileSrch").focusout(function(){
+    // Apply timeout to allow click to register before button disappear
     window.setTimeout(function() {
       $(".searchBtn").css("visibility", "visible");
       $(".mobileSrch").css("visibility", "hidden")
     }, 100);
   })
-
+  // Executes if screen with is greater than or equal to 600
   if($(window).width() >= 600){
     $(".searchBtn").css("visibility", "hidden");
     $(".mobileSrch").focusout();
     $(".mobileSrch").hide();
   }
-
-    $(window).scroll(function() {
-        if($(this).scrollTop() != 0) {
-            $('.Backtotop').fadeIn();
-        } else {
-            $('.Backtotop').fadeOut();
-        }
-    });
-
+  // Allow scroll to top, if page is not at the top
+  $(window).scroll(function() {
+      if($(this).scrollTop() != 0) {
+          $('.Backtotop').fadeIn();
+      } else {
+          $('.Backtotop').fadeOut();
+      }
+  });
+  // Animate scroll to top on button click
   $('.Backtotop').click(function() {
        $("html, body").animate({
            scrollTop: 0
        }, 1000);
    });
 
-   // Get number of items stored in the cart
-   $(".itemCount").html(CartItems.getItem("itemCount"));
 
-   // Search Results
-
-   // Search function
+   // Search function to handle string comparison
    function string(str2){
      return {
          contains: function str(str1){
@@ -193,16 +206,17 @@ $(function(){
       }
 	}
 
-   var qv = window.location.search.substring(1,5);
-   var queryVar = qv.trim();
-   var query = window.location.search.substring(6);
-   var bookSearch = decodeURIComponent(query.replace(/%20/g, " ").trim());
+   // Declare count variable, to keep track of the number of matches
    var count = 0;
-
+   // If url query variable equals book, execute code
    if(queryVar === "book"){
       let json = JSON.parse(sessionStorage.getItem("json"));
+      // Boolean variable to keep track of matching results
       var isNotMatch = true;
+      // Loop through json object
       $.each(json.Books, function (index, element) {
+        // Using the search function, compare the title of the
+        // json object with that of the url variable
         if(string(element.Title).contains(bookSearch)){
           var img = $("<img />").attr("style", "height:248px")
                                 .attr("class", "img-thumbnail")
@@ -222,8 +236,11 @@ $(function(){
                           .append(imgDiv,infoDiv);
 
           $("#srchRslt").append(parentDiv);
+          // Set isNotMatch to false if there is a match
           isNotMatch = false;
+          // increment count for each match
     		  count++;
+          // Pass count to jQuery function
     		  $("#srchCnt").html(count);
         }
       })
@@ -236,9 +253,22 @@ $(function(){
       }
    }
 
+
+   // Get recently viewed book
+   getViewedWorker.onmessage = function(event){
+     $('#recentViewed').show();
+     $('#viewed')
+       .trigger('add.owl.carousel', [event.data])
+       .trigger('refresh.owl.carousel');
+   }
+   getViewedWorker.postMessage("fetch");
+
    // Shopping Cart
+   // Stores subtotal for the shopping cart items
    var subtotal = 0;
+   // Call onmessage on web worker
    shoppingCrtWorker.onmessage = function(event){
+     // Pass data received from web worker file to respected jQuery functions
      var small = $("<small />").append(" by " + event.data.author);
      var title = $("<p class='txtg'></p>").append($("<strong />").text(event.data.title), small);
 	   var language = $("<p class='txtg'></p>").append(event.data.language);
@@ -256,11 +286,14 @@ $(function(){
 		 $("#spcrt").append(parentDiv);
 		 $("span.subtl").html(subtotal.toFixed(2));
    }
+   // Start web worker
    shoppingCrtWorker.postMessage("fetch");
 
+
+   // Hide dialog box until delete button is pressed
    $(".hide-dialog-txt").hide();
 
-   // Remove item from carta
+   // Remove item from cart
    $("div").delegate("button#deleItem","click",function(){
  	  $(".hide-dialog-txt").show();
  	  var item = $(this);
@@ -281,27 +314,31 @@ $(function(){
  		  }
  		});
    })
-
+   // Function that handles deletion of item from the shopping cart
    function deleteItem(e){
- 	var item = e.attr("data-book-isbn");
- 	var request = db.transaction("Books", "readwrite")
- 		.objectStore("Books")
- 		.delete(item);
- 	request.onsuccess = function(event) {
- 		// It's gone!
- 		var cartVal = $(".itemCnt").html();
- 	    $(".itemCnt").html(parseInt(cartVal) - 1);
- 		$("div[data-id='"+item+"']").remove();
- 	};
+      // Stores item's data value in item variable
+     	var item = e.attr("data-book-isbn");
+
+     	var request = db.transaction("Books", "readwrite")
+     		.objectStore("Books")
+     		.delete(item);
+     	request.onsuccess = function(event) {
+     		// It's gone!
+     		var cartVal = $(".itemCnt").html();
+     	    $(".itemCnt").html(parseInt(cartVal) - 1);
+     		$("div[data-id='"+item+"']").remove();
+     	};
+
    }
 
 
   // Adds item to Cart on click
   $("div#bkinfo").delegate("button#cartBtn","click",function(event){
+    // Stores item's data value in item variable
     var item = $(this).attr("data-book");
-
+    // Call onmessage on web worker
     cartWorker.onmessage = function(e){
-
+      // If value received is a number, execute code, else console log the value
       if(!Number.isNaN(parseInt(e.data))){
         var cartVal = $(".itemCnt").html();
         $(".itemCnt").html(parseInt(cartVal) + 1);
@@ -309,41 +346,28 @@ $(function(){
         console.log(e.data);
       }
     }
-
+    // Start web worker and sends object to it, containing item value and
+    //the json object
     cartWorker.postMessage({Title: item, Json: JSON.stringify(jsonObj)});
   })
 
   // Add viewed item on click
   $("div#bookslib").delegate("div.viewedItem","click",function(){
+      // Stores data value item into the item variable
       var item = $(this).attr("data-viewed-item");
-      //let jsonObj = JSON.parse(sessionStorage.getItem("json"));
+      // Call onmessage o web worker
       viewedWorker.onmessage = function(e){
+        // Console log value received the web worker file
         console.log(e.data);
       }
-
+      // Start web worker and send object containing item's value and the json object
       viewedWorker.postMessage({Title: item.toString(), Json: JSON.stringify(jsonObj)});
 
   })
 
-  // Get recently viewed book
-  getViewedWorker.onmessage = function(event){
-    $('#recentViewed').show();
-    $('#viewed')
-      .trigger('add.owl.carousel', [event.data])
-      .trigger('refresh.owl.carousel');
-  }
-  getViewedWorker.postMessage("fetch");
 
 
-  // disable Cart's tooltip
-  $('.cart').tooltip({
-	 disabled: true,
-	 //close: function( event, ui ) { $(this).tooltip('disable'); },
-  });
-
-  $(".cart").tooltip("disable");
-
-
+  $("#tabs").tabs();
    // jQuery autocomplete
    var availableTags = [
       "Astrophysics",
