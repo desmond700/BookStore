@@ -1,6 +1,5 @@
 
 <?php $pageTitle = (string)$_GET["title"]; ?>
-<?php $bookscript = "<script src='js/book.js'></script>" ?>
 <?php require "include/header.php" ?>
       <div class="container mt-4">
         <section>

@@ -1,4 +1,3 @@
-<?php $bookscript = "<script src='js/shopping-cart.js'></script>" ?>
 <?php $pageTitle = "Shopping-Cart" ?>
 <?php require "include/header.php" ?>
       <div class="container">
