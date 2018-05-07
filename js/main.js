@@ -1,14 +1,14 @@
 
 // Create web workers
-var viewedWorker = new Worker("js/addViewedItem_WW.js");
-var ajaxWorker = new Worker("js/Ajax_WW.js");
-var cartWorker = new Worker("js/AddToCart_WW.js");
-var getViewedWorker = new Worker("js/GetViewedItem_WW.js");
-var shoppingCrtWorker = new Worker("js/shoppingCrt_WW.js");
+var fetchWorker = new Worker("js/FetchWorker.js");
+var modWorker = new Worker("js/ModWorker.js");
 
 $(function(){
-
-  var jsonObj;
+  // Fetch the url of the current page
+  var location = window.location.href.substring(26);
+  // Variable to store json object
+  var jsonObj = "";
+  // Variable to store book's genre
   var genre = "";
   // Gets hash value from url
   var hashVal = window.location.hash.substring(1);
@@ -18,18 +18,34 @@ $(function(){
   var qv = window.location.search.substring(1,5);
   var queryVar = qv.trim();
   // Gets the query variable
-  var query = window.location.search.substring(6);
+  var query = window.location.search.substring(7);
+  var qs = decodeURIComponent(query.replace(/%20/g, " ").trim());
   // Decode url
   var bookSearch = decodeURIComponent(query.replace(/%20/g, " ").trim());
 
+
+  // Chech if browser supports service workers
+  /*if("serviceWorker" in navigator){
+    window.addEventListener("load", function(registration){
+      navigator.serviceWorker.register("sw.js").then(function(){
+        console.log("ServiceWorker registration successful with scope: ", registration.scope)
+      }, function(err){
+        console.log("ServiceWorker registration failed: ", err)
+      });
+    })
+  }*/
+
+
   // call onmessage on the web worker
-  ajaxWorker.onmessage = function(event){
+  fetchWorker.onmessage = function(event){
       // FadeOut page loading gif
       $(".se-pre-con").stop().fadeOut(600);
       // Store json received from the worker file in jsonObj variable
       jsonObj = event.data.Json;
+      // Call a sessionStorage to store the json object received from the worker file
+      window.sessionStorage.setItem("json", JSON.stringify(jsonObj));
       // Pass record count received from the worker file to the html function
-      $("i.itemCnt,span.itemCnt").html(event.data.recordCount);
+      $(".itemCnt").html(event.data.recordCount);
       // Loop through json object and pass value to the respected jQuery function
       $.each(jsonObj.Books, function (index, element) {
           var img = $("<img />").attr("style", "height:248px")
@@ -42,7 +58,7 @@ $(function(){
           var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(title);
           var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
           var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
-          var parentDiv = $("<div class='viewedItem d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light' data-viewed-item='"+element.Title+"'></div>")
+          var parentDiv = $('<div class="viewedItem d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light" data-viewed-item="'+element.Title+'"></div>')
                           .append(anchorImg, anchorTitle, author, bookType, price);
 
           $("#bookslib").append(parentDiv);
@@ -53,8 +69,7 @@ $(function(){
         $("select#genreSel").val(hashVal).trigger( "change" );
   }
   // Start web worker
-  ajaxWorker.postMessage("fetch");
-
+  fetchWorker.postMessage({message: "fetch json"});
 
   // Execute function if select option changes
   $('select').on('change', function () {
@@ -64,6 +79,8 @@ $(function(){
     $("#bkgenre").html(value);
     // Empty the html element containing the respected id
     $("#bookslib").empty();
+    // Changes url based on the select option's value
+    window.location.href = (value === "All") ? "#" : ("#"+value);
 
     if(value !== "All"){
       $.each(jsonObj.Books, function (index, element) {
@@ -78,7 +95,7 @@ $(function(){
             var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(title);
             var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
             var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
-            var parentDiv = $("<div class='d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light'></div>")
+            var parentDiv = $('<div class="viewedItem d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light" data-viewed-item="'+element.Title+'"></div>')
                             .append(anchorImg, anchorTitle, author, bookType, price);
 
             $("#bookslib").append(parentDiv);
@@ -98,17 +115,17 @@ $(function(){
           var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(title);
           var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
           var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
-          var parentDiv = $("<div class='d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light'></div>")
+          var parentDiv = $('<div class="viewedItem d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light" data-viewed-item="'+element.Title+'"></div>')
                           .append(anchorImg, anchorTitle, author, bookType, price);
 
           $("#bookslib").append(parentDiv);
         })
-    }
-
+      }
   })
 
-  // Fills book page based on query valu
-  var json = JSON.parse(sessionStorage.getItem("json"));
+  // Call sessionStorage to retreive the json object stored earlier
+  var json = JSON.parse(window.sessionStorage.getItem("json"));
+  // Fills book page based on query value
   // If url query variable is title, execute loop function
   if(titleVar === "title"){
     // Loop through json object pass value to respected jQuery function
@@ -132,7 +149,25 @@ $(function(){
         title.append($("<h4 class='mb-0'></h4>").text(element.Title),author);
         $("#bkimg").append(img,isbn,price);
         $("#bkinfo").append(title,bookType,review,addToCart);
-        $("#bkdesc").append();
+        var header = $("<h1>Production Details</h1>");
+        var bookType = $("<p class='txtg'></p>").prepend($("<strong />").text("Book Type: "))
+                                                .append(element["Book Type"]);
+        var bookPages = $("<p class='txtg'></p>").prepend($("<strong />").text("Book Pages: "))
+                                                 .append(element["Book Pages"]);
+        var publisher = $("<p class='txtg'></p>").prepend($("<strong />").text("Publisher: "))
+                                                 .append(element.Publisher);
+        var publishedDate = $("<p class='txtg'></p>").prepend($("<strong />").text("Published Date: "))
+                                                     .append(element["Publish Date"]);
+        var isbn = $("<p class='txtg'></p>").prepend($("<strong />").text("ISBN: "))
+                                            .append(element.ISBN);
+        var genre = $("<p class='txtg'></p>").prepend($("<strong />").text("Genre: "))
+                                             .append(element.Genre);
+        var language = $("<p class='txtg'></p>").prepend($("<strong />").text("Language: "))
+                                                .append(element.Language);
+        var aboutAuthor = $("<p class='txtg'></p>").prepend($("<strong />").text("About Author: "))
+                                                   .append(element.Bio);
+
+        $("#bkdesc").append(header,publisher,publishedDate,bookType,bookPages,isbn,genre,language,aboutAuthor);
         $("a#genrelink").html(element.Genre)
                         .attr("href", "./books#"+element.Genre);
         $("#activebook").html(qs);
@@ -253,41 +288,54 @@ $(function(){
       }
    }
 
-
-   // Get recently viewed book
-   getViewedWorker.onmessage = function(event){
-     $('#recentViewed').show();
-     $('#viewed')
-       .trigger('add.owl.carousel', [event.data])
-       .trigger('refresh.owl.carousel');
+   if(location === "/"){
+     // Get recently viewed book
+     fetchWorker.onmessage = function(event){
+       $('#recentViewed').show();
+       $('#viewed')
+         .trigger('add.owl.carousel', [event.data.owlAdd])
+         .trigger('refresh.owl.carousel');
+       // Pass record count received from the worker file to the html function
+       $(".itemCnt").html(event.data.recordCount);
+       // FadeOut page loading gif
+       $(".se-pre-con").stop().fadeOut(600);
+     }
+     fetchWorker.postMessage({message:"fetch viewed"});
    }
-   getViewedWorker.postMessage("fetch");
 
-   // Shopping Cart
-   // Stores subtotal for the shopping cart items
-   var subtotal = 0;
-   // Call onmessage on web worker
-   shoppingCrtWorker.onmessage = function(event){
-     // Pass data received from web worker file to respected jQuery functions
-     var small = $("<small />").append(" by " + event.data.author);
-     var title = $("<p class='txtg'></p>").append($("<strong />").text(event.data.title), small);
-	   var language = $("<p class='txtg'></p>").append(event.data.language);
-     var bookType = $("<p class='txtg'></p>").append(event.data.bookType);
-     var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+event.data.price);
- 		 var quantity = $("<p class='txtg'></p>").append("Qty: 1");
- 		 var img = $("<img />").attr("src","images/bookcover/"+event.data.img)
- 							  .attr("clsss","").width("100");
- 		 var deleteBtn = $("<button class='btn btn-danger ml-auto mt-auto' id='deleItem' data-book-isbn='"+event.data.key+"'></button>").text("delete");
-     var imgDiv = $("<div class=' col-12 col-sm-3 col-md-3 col-lg-2 mr-0'></div>").append(img);
-		 var infoDiv = $("<div class='d-flex flex-column col-12 col-sm-9 col-md-9 col-lg-10'></div>").append(title,bookType,language,price,quantity,deleteBtn);
-  	 var row = $("<div class='row'></div>").append(imgDiv, infoDiv);
-  	 var parentDiv = $("<div class='card col-md-12 pt-3 pb-3 mb-3' data-id='"+event.data.key+"'></div>").append(row);
-		 subtotal += parseFloat(event.data.price);
-		 $("#spcrt").append(parentDiv);
-		 $("span.subtl").html(subtotal.toFixed(2));
-   }
-   // Start web worker
-   shoppingCrtWorker.postMessage("fetch");
+   if(location === "/shopping-cart"){
+     // Shopping Cart
+     // Stores subtotal for the shopping cart items
+     var subtotal = 0;
+     // FadeOut page loading gif
+     $(".se-pre-con").stop().fadeOut(600);
+     // Call onmessage on web worker
+     fetchWorker.onmessage = function(event){
+       // Pass data received from web worker file to respected jQuery functions
+       var small = $("<small />").append(" by " + event.data.author);
+       var title = $("<p class='txtg'></p>").append($("<strong />").text(event.data.title), small);
+  	   var language = $("<p class='txtg'></p>").append(event.data.language);
+       var bookType = $("<p class='txtg'></p>").append(event.data.bookType);
+       var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+event.data.price);
+   		 var quantity = $("<p class='txtg'></p>").append("Qty: 1");
+   		 var img = $("<img />").attr("src","images/bookcover/"+event.data.img)
+   							  .attr("clsss","").width("100");
+   		 var deleteBtn = $("<button class='btn btn-danger ml-auto mt-auto' id='deleItem' data-book-isbn='"+event.data.key+"'></button>").text("delete");
+       var imgDiv = $("<div class=' col-12 col-sm-3 col-md-3 col-lg-2 mr-0'></div>").append(img);
+  		 var infoDiv = $("<div class='d-flex flex-column col-12 col-sm-9 col-md-9 col-lg-10'></div>").append(title,bookType,language,price,quantity,deleteBtn);
+    	 var row = $("<div class='row'></div>").append(imgDiv, infoDiv);
+    	 var parentDiv = $("<div class='card col-md-12 pt-3 pb-3 mb-3' data-id='"+event.data.key+"'></div>").append(row);
+  		 subtotal += parseFloat(event.data.price);
+  		 $("#spcrt").append(parentDiv);
+  		 $("span.subtl").html(subtotal.toFixed(2));
+       // Pass record count received from the worker file to the html function
+       $(".itemCnt").html(event.data.recordCount);
+       // FadeOut page loading gif
+       $(".se-pre-con").stop().fadeOut(600);
+     }
+     // Start web worker
+     fetchWorker.postMessage({message:"fetch cart items"});
+  }
 
 
    // Hide dialog box until delete button is pressed
@@ -317,18 +365,16 @@ $(function(){
    // Function that handles deletion of item from the shopping cart
    function deleteItem(e){
       // Stores item's data value in item variable
-     	var item = e.attr("data-book-isbn");
+      var item = e.attr("data-book-isbn");
 
-     	var request = db.transaction("Books", "readwrite")
-     		.objectStore("Books")
-     		.delete(item);
-     	request.onsuccess = function(event) {
-     		// It's gone!
+      modWorker.onmessage = function(e){
+        console.log(e.data);
+        // It's gone!
      		var cartVal = $(".itemCnt").html();
-     	    $(".itemCnt").html(parseInt(cartVal) - 1);
-     		$("div[data-id='"+item+"']").remove();
-     	};
-
+   	    $(".itemCnt").html(parseInt(cartVal) - 1);
+   		  $("div[data-id='"+item+"']").remove();
+      }
+      modWorker.postMessage({message: "delete", title: item, json: JSON.stringify(jsonObj)});
    }
 
 
@@ -337,7 +383,7 @@ $(function(){
     // Stores item's data value in item variable
     var item = $(this).attr("data-book");
     // Call onmessage on web worker
-    cartWorker.onmessage = function(e){
+    modWorker.onmessage = function(e){
       // If value received is a number, execute code, else console log the value
       if(!Number.isNaN(parseInt(e.data))){
         var cartVal = $(".itemCnt").html();
@@ -348,7 +394,7 @@ $(function(){
     }
     // Start web worker and sends object to it, containing item value and
     //the json object
-    cartWorker.postMessage({Title: item, Json: JSON.stringify(jsonObj)});
+    modWorker.postMessage({message: "addToCart", title: item, json: JSON.stringify(jsonObj)});
   })
 
   // Add viewed item on click
@@ -356,12 +402,12 @@ $(function(){
       // Stores data value item into the item variable
       var item = $(this).attr("data-viewed-item");
       // Call onmessage o web worker
-      viewedWorker.onmessage = function(e){
+      modWorker.onmessage = function(e){
         // Console log value received the web worker file
         console.log(e.data);
       }
       // Start web worker and send object containing item's value and the json object
-      viewedWorker.postMessage({Title: item.toString(), Json: JSON.stringify(jsonObj)});
+      modWorker.postMessage({message: "viewed", title: item, json: JSON.stringify(jsonObj)});
 
   })
 
