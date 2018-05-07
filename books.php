@@ -14,7 +14,7 @@
             </div>
             <div class="d-flex justify-content-between col-10 col-sm-8 col-md-5 col-lg-3">
               <label class=" mr-2 mt-auto mb-auto">Genre:</label>
-              <select id="genreSel" class="form-control form-control-sm mt-auto mb-auto" onchange="getVal(this.value)">
+              <select id="genreSel" class="form-control form-control-sm mt-auto mb-auto">
                 <option value="All">All</option>
                 <option value="Technology">Technology</option>
                 <option value="Science">Science</option>

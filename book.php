@@ -18,8 +18,10 @@
             <div class="row">
               <div class="card mr-4" id="bkimg"></div>
               <div class="col-md-6" id="bkinfo"></div>
+              <div class="col-sm-12 my-3 px-0"><hr class="bg-dark"></div>
+              <div class="col-sm-12 px-0" id="bkdesc"></div>
             </div>
-            <div class="col-sm-12" id="bkdesc"></div>
+
           </div>
         </div>
       </section>
