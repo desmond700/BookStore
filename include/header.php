@@ -30,7 +30,7 @@
   <div class="se-pre-con"></div>
     <div class="container-fluid px-0">
       <header class="d-flex head bg-dark px-3">
-          <form class="d-flex mobileSrch container-fluid mt-2" action="search.php">
+          <form class="d-flex mobileSrch container-fluid mt-2" action="search">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fa fa-arrow-left"></i></span>
@@ -41,7 +41,7 @@
           </form>
         <h1 class="text-white">Book-Store</h1>
         <div class="display bg-dark" id="searchBar">
-          <form class="form-inline my-2 my-lg-0 search" action="search.php">
+          <form class="form-inline my-2 my-lg-0 search" action="search">
             <input class="form-control mr-sm-2 tags" type="search" name="book" placeholder="Search Book-Store" aria-label="Search">
             <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
           </form>
@@ -53,7 +53,7 @@
         </button>
       </header>
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="d-flex flex-row btn cart"><a href="shopping-cart.php"><i class="fa fa-shopping-cart text-white" style="font-size: 28px"></i>&nbsp;<span class="badge badge-light itemCnt" style="font-size:14px; color:red; height: 21px">0</span></a></div>
+        <div class="d-flex flex-row btn cart"><a href="./shopping-cart"><i class="fa fa-shopping-cart text-white" style="font-size: 28px"></i>&nbsp;<span class="badge badge-light itemCnt" style="font-size:14px; color:red; height: 21px">0</span></a></div>
         <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
