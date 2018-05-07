@@ -2,6 +2,7 @@
 // Create web workers
 var fetchWorker = new Worker("js/FetchWorker.js");
 var modWorker = new Worker("js/ModWorker.js");
+var AjaxWorker = new Worker("js/AjaxFetchWorker.js");
 
 $(function(){
   // Fetch the url of the current page
@@ -35,41 +36,41 @@ $(function(){
     })
   }*/
 
+    // call onmessage on the web worker
+    fetchWorker.addEventListener("message",function(event){
+        // FadeOut page loading gif
+        $(".se-pre-con").stop().fadeOut(600);
+        // Store json received from the worker file in jsonObj variable
+        jsonObj = event.data.Json;
+        // Call a sessionStorage to store the json object received from the worker file
+        window.sessionStorage.setItem("json", JSON.stringify(jsonObj));
+        // Pass record count received from the worker file to the html function
+        $(".itemCnt").html(event.data.recordCount);
+        // Loop through json object and pass value to the respected jQuery function
+        $.each(jsonObj.Books, function (index, element) {
+            var img = $("<img />").attr("style", "height:248px")
+                                  .attr("class", "img-thumbnail")
+                                  .attr("src", "images/bookcover/" + element.img);
+            var anchorImg = $("<a />").attr("href", "./book?title="+element.Title).append(img)
+                                                       .attr("class", "ml-auto mr-auto");
+            var title = $("<p class='txt'></p>").append(element.Title);
+            var author = $("<h6 class='txtg'></h6>").append(element.Author);
+            var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(title);
+            var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
+            var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
+            var parentDiv = $('<div class="viewedItem d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light" data-viewed-item="'+element.Title+'"></div>')
+                            .append(anchorImg, anchorTitle, author, bookType, price);
 
-  // call onmessage on the web worker
-  fetchWorker.onmessage = function(event){
-      // FadeOut page loading gif
-      $(".se-pre-con").stop().fadeOut(600);
-      // Store json received from the worker file in jsonObj variable
-      jsonObj = event.data.Json;
-      // Call a sessionStorage to store the json object received from the worker file
-      window.sessionStorage.setItem("json", JSON.stringify(jsonObj));
-      // Pass record count received from the worker file to the html function
-      $(".itemCnt").html(event.data.recordCount);
-      // Loop through json object and pass value to the respected jQuery function
-      $.each(jsonObj.Books, function (index, element) {
-          var img = $("<img />").attr("style", "height:248px")
-                                .attr("class", "img-thumbnail")
-                                .attr("src", "images/bookcover/" + element.img);
-          var anchorImg = $("<a />").attr("href", "./book?title="+element.Title).append(img)
-                                                     .attr("class", "ml-auto mr-auto");
-          var title = $("<p class='txt'></p>").append(element.Title);
-          var author = $("<h6 class='txtg'></h6>").append(element.Author);
-          var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(title);
-          var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
-          var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
-          var parentDiv = $('<div class="viewedItem d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light" data-viewed-item="'+element.Title+'"></div>')
-                          .append(anchorImg, anchorTitle, author, bookType, price);
+            $("#bookslib").append(parentDiv);
 
-          $("#bookslib").append(parentDiv);
+        })
+        // Pass url hash value to jQuery function if it's not empty
+        if(hashVal != "")
+          $("select#genreSel").val(hashVal).trigger( "change" );
+    })
+    // Start web worker
+    fetchWorker.postMessage({message: "fetch json"});
 
-      })
-      // Pass url hash value to jQuery function if it's not empty
-      if(hashVal != "")
-        $("select#genreSel").val(hashVal).trigger( "change" );
-  }
-  // Start web worker
-  fetchWorker.postMessage({message: "fetch json"});
 
   // Execute function if select option changes
   $('select').on('change', function () {
@@ -291,6 +292,7 @@ $(function(){
    if(location === "/"){
      // Get recently viewed book
      fetchWorker.onmessage = function(event){
+       //alert("viewed");
        $('#recentViewed').show();
        $('#viewed')
          .trigger('add.owl.carousel', [event.data.owlAdd])
@@ -309,27 +311,33 @@ $(function(){
      var subtotal = 0;
      // FadeOut page loading gif
      $(".se-pre-con").stop().fadeOut(600);
+
      // Call onmessage on web worker
      fetchWorker.onmessage = function(event){
-       // Pass data received from web worker file to respected jQuery functions
-       var small = $("<small />").append(" by " + event.data.author);
-       var title = $("<p class='txtg'></p>").append($("<strong />").text(event.data.title), small);
-  	   var language = $("<p class='txtg'></p>").append(event.data.language);
-       var bookType = $("<p class='txtg'></p>").append(event.data.bookType);
-       var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+event.data.price);
-   		 var quantity = $("<p class='txtg'></p>").append("Qty: 1");
-   		 var img = $("<img />").attr("src","images/bookcover/"+event.data.img)
-   							  .attr("clsss","").width("100");
-   		 var deleteBtn = $("<button class='btn btn-danger ml-auto mt-auto' id='deleItem' data-book-isbn='"+event.data.key+"'></button>").text("delete");
-       var imgDiv = $("<div class=' col-12 col-sm-3 col-md-3 col-lg-2 mr-0'></div>").append(img);
-  		 var infoDiv = $("<div class='d-flex flex-column col-12 col-sm-9 col-md-9 col-lg-10'></div>").append(title,bookType,language,price,quantity,deleteBtn);
-    	 var row = $("<div class='row'></div>").append(imgDiv, infoDiv);
-    	 var parentDiv = $("<div class='card col-md-12 pt-3 pb-3 mb-3' data-id='"+event.data.key+"'></div>").append(row);
-  		 subtotal += parseFloat(event.data.price);
-  		 $("#spcrt").append(parentDiv);
-  		 $("span.subtl").html(subtotal.toFixed(2));
-       // Pass record count received from the worker file to the html function
-       $(".itemCnt").html(event.data.recordCount);
+       console.log(event.data);
+       //alert("shopping-cart");
+       if(typeof( event.data.author) !== "undefined"){
+         // Pass data received from web worker file to respected jQuery functions
+         var small = $("<small />").append(" by " + event.data.author);
+         var title = $("<p class='txtg'></p>").append($("<strong />").text(event.data.title), small);
+    	   var language = $("<p class='txtg'></p>").append(event.data.language);
+         var bookType = $("<p class='txtg'></p>").append(event.data.bookType);
+         var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+event.data.price);
+     		 var quantity = $("<p class='txtg'></p>").append("Qty: 1");
+     		 var img = $("<img />").attr("src","images/bookcover/"+event.data.img)
+     							  .attr("clsss","").width("100");
+     		 var deleteBtn = $("<button class='btn btn-danger ml-auto mt-auto' id='deleItem' data-book-isbn='"+event.data.key+"'></button>").text("delete");
+         var imgDiv = $("<div class=' col-12 col-sm-3 col-md-3 col-lg-2 mr-0'></div>").append(img);
+    		 var infoDiv = $("<div class='d-flex flex-column col-12 col-sm-9 col-md-9 col-lg-10'></div>").append(title,bookType,language,price,quantity,deleteBtn);
+      	 var row = $("<div class='row'></div>").append(imgDiv, infoDiv);
+      	 var parentDiv = $("<div class='card col-md-12 pt-3 pb-3 mb-3' data-id='"+event.data.key+"'></div>").append(row);
+    		 subtotal += parseFloat(event.data.price);
+    		 $("#spcrt").append(parentDiv);
+    		 $("span.subtl").html(subtotal.toFixed(2));
+         // Pass record count received from the worker file to the html function
+         $(".itemCnt").html(event.data.recordCount);
+       }
+
        // FadeOut page loading gif
        $(".se-pre-con").stop().fadeOut(600);
      }

@@ -1,36 +1,24 @@
 // javaScript Document
 
 // Open indexedDB a database
-var request = indexedDB.open("Library");
 var db;
 var count;
 
-
-
-request.onerror = function(event) {
-  // Generic error handler for all errors targeted at this database's
-  // requests!
-  self.postMessage("Database error: " + event.target.errorCode);
-};
-
-// This event is only implemented in recent browsers
-request.onupgradeneeded = function(event) {
-   // Save the IDBDatabase interface
-   var db = event.target.result;
-   // Create an objectStore for this database
-   var objectStore = db.createObjectStore("Books", { keyPath: "ISBN"});
-   // Create an objectStore for this database
-   var booksViewedObjectStore = db.createObjectStore("BooksViewed", { keyPath: "ISBN"});
-}
-
-
 self.onmessage = function(e){
+
+  var request = indexedDB.open("Library");
+//self.postMessage(e.data);
+
   request.onsuccess = function(event) {
+    self.postMessage("e.data");
     db = event.target.result;
+
      var objectStore = db.transaction("Books").objectStore("Books");
      var countRequest = objectStore.count();
      countRequest.onsuccess = function(){
+       //self.postMessage("e.data");
         count = countRequest.result;
+
         if(e.data.message === "fetch json"){
           fetch("../data/books.json").then(response => {
             return response.json();
@@ -42,9 +30,30 @@ self.onmessage = function(e){
           getBook();
         else if(e.data.message === "fetch viewed")
           getViewedItem()
-     }
+
+      }
    }
+   request.onerror = function(event) {
+     // Generic error handler for all errors targeted at this database's
+     // requests!
+     self.postMessage("Database error: " + event.target.errorCode);
+   };
+
+  // This event is only implemented in recent browsers
+  request.onupgradeneeded = function(event) {
+     // Save the IDBDatabase interface
+     var db = event.target.result;
+     // Create an objectStore for this database
+     var objectStore = db.createObjectStore("Books", { keyPath: "ISBN"});
+     // Create an objectStore for this database
+     var booksViewedObjectStore = db.createObjectStore("BooksViewed", { keyPath: "ISBN"});
+  }
 }
+
+
+
+
+
 
 
 function getBook() {

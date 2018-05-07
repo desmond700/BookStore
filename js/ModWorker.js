@@ -67,7 +67,7 @@ function addToCart(item, json){
   };
 
   transaction.onabort = function(event){
-    self.postMessage("Transaction aborted");
+    self.postMessage("Transaction aborted" + event.target.abortError);
   }
 
   transaction.onerror = function(event) {
