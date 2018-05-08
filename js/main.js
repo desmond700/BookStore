@@ -2,7 +2,6 @@
 // Create web workers
 var fetchWorker = new Worker("js/FetchWorker.js");
 var modWorker = new Worker("js/ModWorker.js");
-var AjaxWorker = new Worker("js/AjaxFetchWorker.js");
 
 $(function(){
   // Fetch the url of the current page
@@ -26,15 +25,17 @@ $(function(){
 
 
   // Chech if browser supports service workers
-  /*if("serviceWorker" in navigator){
-    window.addEventListener("load", function(registration){
-      navigator.serviceWorker.register("sw.js").then(function(){
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", (registration) => {
+      navigator.serviceWorker.register("service-worker.js").then(function(){
         console.log("ServiceWorker registration successful with scope: ", registration.scope)
-      }, function(err){
+      }, (err) => {
         console.log("ServiceWorker registration failed: ", err)
       });
     })
-  }*/
+  }else{
+    console.log("No service worker support in this browser.");
+  }
 
     // call onmessage on the web worker
     fetchWorker.addEventListener("message",function(event){
@@ -46,24 +47,28 @@ $(function(){
         window.sessionStorage.setItem("json", JSON.stringify(jsonObj));
         // Pass record count received from the worker file to the html function
         $(".itemCnt").html(event.data.recordCount);
-        // Loop through json object and pass value to the respected jQuery function
-        $.each(jsonObj.Books, function (index, element) {
-            var img = $("<img />").attr("style", "height:248px")
-                                  .attr("class", "img-thumbnail")
-                                  .attr("src", "images/bookcover/" + element.img);
-            var anchorImg = $("<a />").attr("href", "./book?title="+element.Title).append(img)
-                                                       .attr("class", "ml-auto mr-auto");
-            var title = $("<p class='txt'></p>").append(element.Title);
-            var author = $("<h6 class='txtg'></h6>").append(element.Author);
-            var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(title);
-            var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
-            var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
-            var parentDiv = $('<div class="viewedItem d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light" data-viewed-item="'+element.Title+'"></div>')
-                            .append(anchorImg, anchorTitle, author, bookType, price);
 
-            $("#bookslib").append(parentDiv);
+        if(typeof(jsonObj) !== "undefined"){
+          // Loop through json object and pass value to the respected jQuery function
+          $.each(jsonObj.Books, function (index, element) {
+              var img = $("<img />").attr("style", "height:248px")
+                                    .attr("class", "img-thumbnail")
+                                    .attr("src", "images/bookcover/" + element.img);
+              var anchorImg = $("<a />").attr("href", "./book?title="+element.Title).append(img)
+                                                         .attr("class", "ml-auto mr-auto");
+              var title = $("<p class='txt'></p>").append(element.Title);
+              var author = $("<h6 class='txtg'></h6>").append(element.Author);
+              var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(title);
+              var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
+              var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
+              var parentDiv = $('<div class="viewedItem d-flex flex-column col-10 col-sm-5 col-md-3 col-lg-2 mx-3 mt-3 pt-3 bg-light" data-viewed-item="'+element.Title+'"></div>')
+                              .append(anchorImg, anchorTitle, author, bookType, price);
 
-        })
+              $("#bookslib").append(parentDiv);
+
+          })
+        }
+
         // Pass url hash value to jQuery function if it's not empty
         if(hashVal != "")
           $("select#genreSel").val(hashVal).trigger( "change" );
@@ -124,11 +129,12 @@ $(function(){
       }
   })
 
-  // Call sessionStorage to retreive the json object stored earlier
-  var json = JSON.parse(window.sessionStorage.getItem("json"));
+
   // Fills book page based on query value
   // If url query variable is title, execute loop function
   if(titleVar === "title"){
+    // Call sessionStorage to retreive the json object stored earlier
+    let json = JSON.parse(window.sessionStorage.getItem("json"));
     // Loop through json object pass value to respected jQuery function
     $.each(json.Books, function (index, element) {
       /* If the value stored in the url title variable is equal to the
@@ -292,13 +298,15 @@ $(function(){
    if(location === "/"){
      // Get recently viewed book
      fetchWorker.onmessage = function(event){
-       //alert("viewed");
-       $('#recentViewed').show();
-       $('#viewed')
-         .trigger('add.owl.carousel', [event.data.owlAdd])
-         .trigger('refresh.owl.carousel');
-       // Pass record count received from the worker file to the html function
-       $(".itemCnt").html(event.data.recordCount);
+       if(typeof(event.data.owlAdd) !== "undefined"){
+         $('#viewed')
+           .trigger('add.owl.carousel', [event.data.owlAdd])
+           .trigger('refresh.owl.carousel');
+         // Pass record count received from the worker file to the html function
+         $(".itemCnt").html(event.data.recordCount);
+         console.log(event.data.owlAdd);
+         $('#recentViewed').show();
+       }
        // FadeOut page loading gif
        $(".se-pre-con").stop().fadeOut(600);
      }
@@ -388,21 +396,21 @@ $(function(){
 
   // Adds item to Cart on click
   $("div#bkinfo").delegate("button#cartBtn","click",function(event){
-    // Stores item's data value in item variable
-    var item = $(this).attr("data-book");
-    // Call onmessage on web worker
-    modWorker.onmessage = function(e){
-      // If value received is a number, execute code, else console log the value
-      if(!Number.isNaN(parseInt(e.data))){
-        var cartVal = $(".itemCnt").html();
-        $(".itemCnt").html(parseInt(cartVal) + 1);
-      }else {
-        console.log(e.data);
+      // Stores item's data value in item variable
+      var item = $(this).attr("data-book");
+      // Call onmessage on web worker
+      modWorker.onmessage = function(e){
+        // If value received is a number, execute code, else console log the value
+        if(!Number.isNaN(parseInt(e.data))){
+          var cartVal = $(".itemCnt").html();
+          $(".itemCnt").html(parseInt(cartVal) + 1);
+        }else {
+          console.log(e.data);
+        }
       }
-    }
-    // Start web worker and sends object to it, containing item value and
-    //the json object
-    modWorker.postMessage({message: "addToCart", title: item, json: JSON.stringify(jsonObj)});
+      // Start web worker and sends object to it, containing item value and
+      //the json object
+      modWorker.postMessage({message: "addToCart", title: item, json: JSON.stringify(jsonObj)});
   })
 
   // Add viewed item on click
