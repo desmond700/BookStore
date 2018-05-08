@@ -85,7 +85,7 @@ function getViewedItem(){
   var viewCount = objectStore.count();
   viewCount.onsuccess = function(){
 
-    if(viewCount.result > 0){
+    if(viewCount.result > 3){
       objectStore.openCursor().onsuccess = function(event){
         var cursor = event.target.result;
         if(cursor){
