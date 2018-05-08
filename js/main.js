@@ -19,10 +19,11 @@ $(function(){
   var qv = window.location.search.substring(1,5);
   var queryVar = qv.trim();
   // Gets the query variable
-  var query = window.location.search.substring(7);
-  var qs = decodeURIComponent(query.replace(/%20/g, " ").trim());
+  var titleQuery = window.location.search.substring(7);
+  var qs = decodeURIComponent(titleQuery.replace(/%20/g, " ").trim());
   // Decode url
-  var bookSearch = decodeURIComponent(query.replace(/%20/g, " ").trim());
+  var srchQuery = window.location.search.substring(6);
+  var bookSearch = decodeURIComponent(srchQuery.replace(/%20/g, " ").trim());
 
 
   // Chech if browser supports service workers
@@ -45,7 +46,7 @@ $(function(){
         // Store json received from the worker file in jsonObj variable
         jsonObj = event.data.Json;
         // Call a sessionStorage to store the json object received from the worker file
-        window.sessionStorage.setItem("json", JSON.stringify(jsonObj));
+        window.localStorage.setItem("json", JSON.stringify(jsonObj));
         // Pass record count received from the worker file to the html function
         $(".itemCnt").html(event.data.recordCount);
 
@@ -135,7 +136,7 @@ $(function(){
   // If url query variable is title, execute loop function
   if(titleVar === "title"){
     // Call sessionStorage to retreive the json object stored earlier
-    let json = JSON.parse(window.sessionStorage.getItem("json"));
+    let json = typeof(localStorage.getItem("json")) !== "undefined" ? JSON.parse(localStorage.getItem("json")) : "";
     // Loop through json object pass value to respected jQuery function
     $.each(json.Books, function (index, element) {
       /* If the value stored in the url title variable is equal to the
@@ -253,7 +254,8 @@ $(function(){
    var count = 0;
    // If url query variable equals book, execute code
    if(queryVar === "book"){
-      let json = JSON.parse(sessionStorage.getItem("json"));
+     // Call sessionStorage to retreive the json object stored earlier
+     let json = typeof(localStorage.getItem("json")) !== "undefined" ? JSON.parse(localStorage.getItem("json")) : "";
       // Boolean variable to keep track of matching results
       var isNotMatch = true;
       // Loop through json object
@@ -275,8 +277,9 @@ $(function(){
           var review = $("<p></p>").text(element.Review).prepend(strong.text("Review: "));
           var imgDiv = $("<div class='col-md-2'></div>").append(anchorImg);
           var infoDiv = $("<div class='col-md-10'></div>").append(anchorTitle, author, bookType, price, review);
+          var row = $("<div class='row justify-content-center'></div>").append(imgDiv,infoDiv);
           var parentDiv = $("<div class='d-flex flex-row col-10 col-sm-5 col-md-12 pt-3 pb-3 srchDivs bg-light'></div>")
-                          .append(imgDiv,infoDiv);
+                          .append(row);
 
           $("#srchRslt").append(parentDiv);
           // Set isNotMatch to false if there is a match
@@ -305,7 +308,6 @@ $(function(){
            .trigger('refresh.owl.carousel');
          // Pass record count received from the worker file to the html function
          $(".itemCnt").html(event.data.recordCount);
-         console.log(event.data.owlAdd);
          $('#recentViewed').show();
        }
        // FadeOut page loading gif

@@ -30,7 +30,7 @@
   <div class="se-pre-con"></div>
     <div class="container-fluid px-0">
       <header class="d-flex head bg-dark px-3">
-          <form class="d-flex mobileSrch container-fluid mt-2" action="search">
+          <form class="d-flex mobileSrch container-fluid mt-2 mr-2" action="search">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fa fa-arrow-left"></i></span>

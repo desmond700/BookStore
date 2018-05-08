@@ -1,6 +1,6 @@
 <footer class="bg-dark text-white mt-4">
   <a href="javascript:void" class="link-text Backtotop"><div class="d-flex justify-content-center col-md-12 bg-dark p-2 text-center text-white"><h5 class="mt-auto">Back to top&nbsp;</h5><i class="fa fa-angle-double-up" style="font-size:36px"></i></div></a>
-  <div class="container-fluid py-5 px-3 mx-0">
+  <div class="container-fluid pt-5 px-3 mx-0">
     <div class="row ">
       <div class="col-sm-4 col-lg-4 card-body px-3">
           <h2>Subscribe to our newsletter</h2>
@@ -10,7 +10,7 @@
             <input type="submit" class="btn btn-danger ml-2" value="submit" />
           </form>
        </div>
-       <div class="col-sm-4 col-lg-3 card-body border-left border-right px-3">
+       <div class="col-sm-4 col-lg-3 card-body px-3">
           <h2>Menu-</h2>
           <div class="d-flex justify-content-between">
             <ul class="navbar-nav">
@@ -50,7 +50,7 @@
           </div>
 
         </div>
-        <div class="col-sm-4 col-lg-2 card-body border-right px-2">
+        <div class="col-sm-4 col-lg-2 card-body px-2">
            <h2>Follow Us</h2>
            <a class="btn btn-block btn-social btn-google">
              <span class="fa fa-google "></span> Sign in with Twitter
@@ -68,8 +68,10 @@
         <div class="col-sm-12 col col-lg-3 card-body px-3">
              <h2>Logo</h2>
            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur perferendis iste quod.</p>
-           <p class="pt-3 pl-0" id="copyright">Copyright&copy; 2018 <a href="index.html">Book-Store.com</a>, All rights reserved.</p>
          </div>
+         <div class="d-flex col-sm-12 col col-lg-12 card-body px-3">
+            <p class="align-self-start pt-3 pl-0" id="copyright">Copyright&copy; 2018 <a href="index.html">Book-Store.com</a>, All rights reserved.</p>
+          </div>
       </div>
   </div>
 </footer>

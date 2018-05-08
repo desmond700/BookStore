@@ -79,7 +79,7 @@
 
 .text {
   background-color: #333;
-	opacity: 0.9;
+	opacity: 0.2;
   color: white;
   font-size: 16px;
   padding: 16px 32px;
@@ -141,10 +141,9 @@ ul#headnav li > a:focus{
 form.mobileSrch{
   position: absolute;
   visibility: hidden;
-  width: 95%;
+  width: 90%;
   height: 40px;
   padding: 0;
-  margin-right: 20px;
 }
 
 button#sBtn{

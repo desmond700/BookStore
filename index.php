@@ -20,7 +20,7 @@
                 <button type="button" class="btn btn-primary">View</button>
               </div>
             </div>
-            <div class="col-md-4 py-3 px-3 mb-3 border" id="rightfold">
+            <div class="col-md-4 py-3 px-3 mb-3" id="rightfold">
               <div class="col-md-12">
                 <h3>Shop by category</h3>
                 <hr class="bg-dark">
@@ -45,12 +45,16 @@
                 </ul>
               </div>
             </div>
-            <div class="d-flex justify-content-between col-md-12 bg-dark px-4 py-2">
-              <p class="my-auto text-white">FREE SHIPPING: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem, enim!</p>
-              <form class="d-flex" action="index.html" method="post">
-                <input type="input" class="form-control form-control-lg" name="specialOffer" placeholder="Enter email for special offers">
-                <input type="submit" class="btn btn-danger ml-2" value="submit">
-              </form>
+            <div class="d-flex justify-content-between col-md-12 bg-dark px-0 py-2">
+              <div class="container-fluid">
+                <div class="row">
+                  <p class="my-auto text-white col-12 col-md-7">FREE SHIPPING: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem, enim!</p>
+                  <form class="d-flex col-12 col-md-5" action="index.html" method="post">
+                    <input type="input" class="form-control form-control-lg" name="specialOffer" placeholder="Enter email for special offers">
+                    <input type="submit" class="btn btn-danger ml-2" value="submit">
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
         </div>
