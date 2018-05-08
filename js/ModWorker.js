@@ -1,44 +1,46 @@
 // JavaScript Document
 
+var db;
 // Worker response
 self.onmessage = function(e){
   var title = e.data.title;
   var json = JSON.parse(e.data.json);
   var message = e.data.message;
-  if(message === "addToCart")
-    addToCart(title, json);
-  else if(message === "viewed")
-    storeViewedItem(title, json)
-  else if(message === "delete"){
-    var request = db.transaction("Books", "readwrite")
-      .objectStore("Books")
-      .delete(title);
-    request.onsuccess = function(event) {
-      self.postMessage("item deleted")
+  // Open indexedDB a database
+  var request = indexedDB.open("Library");
+
+  request.onsuccess = function(event) {
+    db = event.target.result;
+    if(message === "addToCart")
+      addToCart(title, json);
+    else if(message === "viewed")
+      storeViewedItem(title, json)
+    else if(message === "delete"){
+      let request = db.transaction("Books", "readwrite")
+        .objectStore("Books")
+        .delete(title);
+      request.onsuccess = function(event) {
+        self.postMessage("item deleted")
+      }
     }
   }
 
+  // This event is only implemented in recent browsers
+  request.onupgradeneeded = function(event) {
+   // Save the IDBDatabase interface
+   var db = event.target.result;
+
+   // Create an objectStore for this database
+   var objectStore = db.createObjectStore("Books", { keyPath: "ISBN"});
+   // Create an objectStore for this database
+   var booksViewedObjectStore = db.createObjectStore("BooksViewed", { keyPath: "ISBN"});
+  }
 }
 
 
-// Open indexedDB a database
-var request = indexedDB.open("Library");
-var db;
 
-request.onsuccess = function(event) {
-  db = event.target.result;
-}
 
-// This event is only implemented in recent browsers
-request.onupgradeneeded = function(event) {
- // Save the IDBDatabase interface
- var db = event.target.result;
 
- // Create an objectStore for this database
- var objectStore = db.createObjectStore("Books", { keyPath: "ISBN"});
- // Create an objectStore for this database
- var booksViewedObjectStore = db.createObjectStore("BooksViewed", { keyPath: "ISBN"});
-}
 
 function addToCart(item, json){
   var cartData;
@@ -67,12 +69,12 @@ function addToCart(item, json){
   };
 
   transaction.onabort = function(event){
-    self.postMessage("Transaction aborted" + event.target.abortError);
+    self.postMessage("Transaction aborted");
   }
 
   transaction.onerror = function(event) {
     //note.innerHTML += '<li>Transaction not opened due to error. Duplicate items not allowed.</li>';
-    console.info("Item already added to cart");
+    self.postMessage("Item already added to cart");
     self.postMessage("Transaction not opened due to error. Duplicate items not allowed");
   };
 
