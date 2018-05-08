@@ -5,7 +5,8 @@ var modWorker = new Worker("js/ModWorker.js");
 
 $(function(){
   // Fetch the url of the current page
-  var location = window.location.href.substring(26);
+  var url = window.location.href;
+  var location = url.substring(url.lastIndexOf("e")+1);
   // Variable to store json object
   var jsonObj = "";
   // Variable to store book's genre
