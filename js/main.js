@@ -271,11 +271,11 @@ $(function(){
           var strong = $("<strong />");
           var title = $("<p class='txt'></p>").append(element.Title);
           var author = $("<small class='txtg'></small>").append("<br>by "+element.Author);
-          var anchorTitle = $("<a />").attr("href", "./book?title="+element.Title).append(element.Title, author);
+          var anchorTitle = $("<a class='mx-auto'> </a>").attr("href", "./book?title="+element.Title).append(element.Title, author);
           var bookType = $("<p class='txtg'></p>").append(element["Book Type"]);
           var price = $("<p class='txtg text-danger'></p>").append("CDN$ "+element.Price);
           var review = $("<p></p>").text(element.Review).prepend(strong.text("Review: "));
-          var imgDiv = $("<div class='col-md-2'></div>").append(anchorImg);
+          var imgDiv = $("<div class='d-flex col-md-2'></div>").append(anchorImg);
           var infoDiv = $("<div class='col-md-10'></div>").append(anchorTitle, author, bookType, price, review);
           var row = $("<div class='row justify-content-center'></div>").append(imgDiv,infoDiv);
           var parentDiv = $("<div class='d-flex flex-row col-10 col-sm-5 col-md-12 pt-3 pb-3 srchDivs bg-light'></div>")

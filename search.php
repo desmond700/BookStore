@@ -6,10 +6,8 @@
 			<h2 class="card-header text-center">(<span id="srchCnt">0</span>) Search Results</span></h2>
         </section>
       <section class="card mt-4">
-        <div class="card-body" >
-          <div class="container">
-            <div class="row justify-content-center" id="srchRslt"></div>
-          </div>
+        <div class="container">
+          <div class="row justify-content-center py-3" id="srchRslt"></div>
         </div>
       </section>
     </div>
