@@ -27,7 +27,7 @@
                 </div>
               </div>
               <div class="d-flex col-md-2 justify-content-end px-0">
-                <p class="my-auto">Entries: <span class="bkCount">0</span></p>
+                <p class="my-auto">Entries: <span id="bkCount">0</span></p>
               </div>
             </div>
           </div>
