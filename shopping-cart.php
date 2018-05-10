@@ -18,7 +18,7 @@
         <div class="card-body" >
           <div class="container">
             <div class="row" id="spcrt">
-      				<div style="display:none" class="hide-dialog-txt" title="Delete item?">
+      				<div id="dialog-confirm" class="hide-dialog-txt" title="Delete item?">
       				  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This item will be permanently deleted and cannot be recovered. Are you sure?</p>
       				</div>
             </div>

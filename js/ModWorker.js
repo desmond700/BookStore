@@ -16,11 +16,12 @@ self.onmessage = function(e){
     else if(message === "viewed")
       storeViewedItem(title, json)
     else if(message === "delete"){
-      let request = db.transaction("Books", "readwrite")
-        .objectStore("Books")
-        .delete(title);
+      let transaction = db.transaction("Books", "readwrite")
+      let objectStore = transaction.objectStore("Books")
+      let item = objectStore.get(title);
+      let request = objectStore.delete(title);
       request.onsuccess = function(event) {
-        self.postMessage("item deleted")
+        self.postMessage(item.result.price)
       }
     }
   }

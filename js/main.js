@@ -50,6 +50,8 @@ $(function(){
         // Pass record count received from the worker file to the html function
         $(".itemCnt").html(event.data.recordCount);
 
+        let count = 0;
+
         if(typeof(jsonObj) !== "undefined"){
           // Loop through json object and pass value to the respected jQuery function
           $.each(jsonObj.Books, function (index, element) {
@@ -67,7 +69,8 @@ $(function(){
                               .append(anchorImg, anchorTitle, author, bookType, price);
 
               $("#bookslib").append(parentDiv);
-
+              ++count;
+              $("span#bkCount").html(count);
           })
         }
 
@@ -91,6 +94,7 @@ $(function(){
     window.location.href = (value === "All") ? "#" : ("#"+value);
 
     if(value !== "All"){
+      let count = 0;
       $.each(jsonObj.Books, function (index, element) {
           if(value == element.Genre){
             var img = $("<img />").attr("style", "height:248px")
@@ -107,10 +111,13 @@ $(function(){
                             .append(anchorImg, anchorTitle, author, bookType, price);
 
             $("#bookslib").append(parentDiv);
+            ++count;
+            $("span#bkCount").html(count);
           }
       })
     }
     else{
+      let count = 0;
       $.each(jsonObj.Books, function (index, element) {
 
           var img = $("<img />").attr("style", "height:248px")
@@ -127,6 +134,8 @@ $(function(){
                           .append(anchorImg, anchorTitle, author, bookType, price);
 
           $("#bookslib").append(parentDiv);
+          ++count;
+          $("span#bkCount").html(count);
         })
       }
   })
@@ -325,7 +334,6 @@ $(function(){
 
      // Call onmessage on web worker
      fetchWorker.onmessage = function(event){
-       console.log(event.data);
        //alert("shopping-cart");
        if(typeof( event.data.author) !== "undefined"){
          // Pass data received from web worker file to respected jQuery functions
@@ -387,8 +395,10 @@ $(function(){
       var item = e.attr("data-book-isbn");
 
       modWorker.onmessage = function(e){
-        console.log(e.data);
         // It's gone!
+        var getSubtl = $(".subtl").html();
+        var compSubtl = parseFloat(getSubtl) - e.data;
+        $(".subtl").html(compSubtl.toFixed(2));
      		var cartVal = $(".itemCnt").html();
    	    $(".itemCnt").html(parseInt(cartVal) - 1);
    		  $("div[data-id='"+item+"']").remove();
