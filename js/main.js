@@ -27,7 +27,7 @@ $(function(){
 
 
   // Chech if browser supports service workers
-  if("serviceWorker" in navigator){
+  /*if("serviceWorker" in navigator){
     window.addEventListener("load", (registration) => {
       navigator.serviceWorker.register("service-worker.js").then(function(){
         console.log("ServiceWorker registration successful with scope: ", registration.scope)
@@ -37,7 +37,7 @@ $(function(){
     })
   }else{
     console.log("No service worker support in this browser.");
-  }
+  }*/
 
     // call onmessage on the web worker
     fetchWorker.addEventListener("message",function(event){
@@ -457,6 +457,7 @@ $(function(){
   })
 
 
+  $( "#accordion" ).accordion();
 
   $("#tabs").tabs();
    // jQuery autocomplete
