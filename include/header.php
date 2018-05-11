@@ -39,7 +39,7 @@
               <button id="sBtn" class="btn btn-outline-light" type="submit">Search</button>
             </div>
           </form>
-        <h1 class="text-white">Book-Store</h1>
+        <h1 class="text-white"><a href="./" class="card-link text-white">Book-Store</a></h1>
         <div class="display bg-dark" id="searchBar">
           <form class="form-inline my-2 my-lg-0 search" action="search">
             <input class="form-control mr-sm-2 tags" type="search" name="book" placeholder="Search Book-Store" aria-label="Search">

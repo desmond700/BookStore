@@ -5,8 +5,8 @@
 			<div class="container">
         <div class="row justify-content-between">
           <h3 class="pb-0 px-0 col-12 col-md-3 text-center">Shopping Cart <i class="fa fa-shopping-cart" style="font-size: 28px"></i></h3>
-  			  <div class="d-flex">
-    				<button class="btn btn-warning">Checkout</button>
+  			  <div class="d-flex col-12 col-sm-4 justify-content-center">
+    				<button class="btn btn-warning"><a href="./checkout" class="card-link text-dark">Checkout</a></button>
     				<div class=" d-flex h-100 pb-0 mt-auto mb-auto ml-2 font-weight-bold" style="border-left:1px solid #000">
     					<p class="mt-auto mb-auto ml-2">Subtotal(<span class="itemCnt">0</span> items): <span class="text-danger">CDN$ <span class="subtl">0</span></span></p>
     				</div>

@@ -66,29 +66,9 @@
           <div class="row">
             <div class="owl-carousel owl-theme" id="featured">
                 <div class="item mb-3">
-                  <div class="d-flex card overlay">
-                    <img src="images/bookcover/Astrophysics_for_People_in_a_Hurry.jpg" class="img-responsive image" height="350" alt="">
-                    <div class="middle">
-                      <a href="" class="text d-block card-link text-white">
-                        Quick look
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div class="item mb-3">
-                  <div class="d-flex card overlay">
-                    <img src="images/bookcover/How_to_Solve_It.jpg" class="img-responsive image" height="350" alt="">
-                    <div class="middle">
-                      <a href="" class="text d-block card-link text-white">
-                        Quick look
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div class="item mb-3">
-                  <div class="item">
-                    <div class="d-flex card overlay">
-                      <img src="images/bookcover/Enlightenment_Now.jpg" class="img-responsive image" height="350" alt="">
+                  <div class="d-flex card">
+                    <div class="card-body overlay">
+                      <img src="images/bookcover/Astrophysics_for_People_in_a_Hurry.jpg" class="img-responsive image" height="350" alt="">
                       <div class="middle">
                         <a href="" class="text d-block card-link text-white">
                           Quick look
@@ -98,37 +78,69 @@
                   </div>
                 </div>
                 <div class="item mb-3">
-                  <div class="item">
-                    <div class="d-flex card overlay">
-                      <img src="images/bookcover/A_Brief_History_of_Time.jpg" class="img-responsive image" height="350" alt="">
-                      <div class="middle">
-                        <a href="" class="text d-block card-link text-white">
-                          Quick look
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="item mb-3">
-                  <div class="item">
-                    <div class="d-flex card overlay">
-                      <img src="images/bookcover/A_Mind_for_Numbers.jpg" class="img-responsive image" height="350" alt="">
-                      <div class="middle">
-                        <a href="" class="text d-block card-link text-white">
-                          Quick look
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="item mb-3">
-                  <div class="item">
-                    <div class="d-flex card overlay">
+                  <div class="d-flex card">
+                    <div class="card-body overlay">
                       <img src="images/bookcover/How_to_Solve_It.jpg" class="img-responsive image" height="350" alt="">
                       <div class="middle">
                         <a href="" class="text d-block card-link text-white">
                           Quick look
                         </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="item mb-3">
+                  <div class="item">
+                    <div class="d-flex card">
+                      <div class="card-body overlay">
+                        <img src="images/bookcover/Enlightenment_Now.jpg" class="img-responsive image" height="350" alt="">
+                        <div class="middle">
+                          <a href="" class="text d-block card-link text-white">
+                            Quick look
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="item mb-3">
+                  <div class="item">
+                    <div class="d-flex card">
+                      <div class="card-body overlay">
+                        <img src="images/bookcover/A_Brief_History_of_Time.jpg" class="img-responsive image" height="350" alt="">
+                        <div class="middle">
+                          <a href="" class="text d-block card-link text-white">
+                            Quick look
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="item mb-3">
+                  <div class="item">
+                    <div class="d-flex card">
+                      <div class="card-body overlay">
+                        <img src="images/bookcover/A_Mind_for_Numbers.jpg" class="img-responsive image" height="350" alt="">
+                        <div class="middle">
+                          <a href="" class="text d-block card-link text-white">
+                            Quick look
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="item mb-3">
+                  <div class="item">
+                    <div class="d-flex card">
+                      <div class="card-body overlay">
+                        <img src="images/bookcover/How_to_Solve_It.jpg" class="img-responsive image" height="350" alt="">
+                        <div class="middle">
+                          <a href="" class="text d-block card-link text-white">
+                            Quick look
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
