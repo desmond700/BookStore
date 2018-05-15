@@ -14,8 +14,8 @@
           <div class="col-sm-12"><hr></div>
         <div class="container">
           <div class="row" id="spcrt">
-            <div class="col-md-8">
-              <h3 class="text-center mb-0 py-4">Secure checkout</h3>
+            <div class="col-md-12">
+              <h3 class="text-center mb-0 py-4">Secure checkout <i class="fa fa-shopping-cart"></i>(<span class="itemCnt">0</span> items)</h3>
               <div id="accordion">
               <h3>Step 1: Billing Address</h3>
               <div>
@@ -124,9 +124,6 @@
 
               </div>
             </div>
-            </div>
-            <div class="col-md-4">
-              <h3 class="text-center mb-0 py-4"><i class="fa fa-shopping-cart"></i>(<span>0</span> items)</h3>
             </div>
     			</div>
         </div>
