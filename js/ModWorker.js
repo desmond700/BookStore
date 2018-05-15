@@ -4,17 +4,21 @@ var db;
 // Worker response
 self.onmessage = function(e){
   var title = e.data.title;
-  var json = JSON.parse(e.data.json);
+  var json;
   var message = e.data.message;
   // Open indexedDB a database
   var request = indexedDB.open("Library");
 
   request.onsuccess = function(event) {
     db = event.target.result;
-    if(message === "addToCart")
+    if(message === "addToCart"){
+	  json = JSON.parse(e.data.json);
       addToCart(title, json);
-    else if(message === "viewed")
+	}
+    else if(message === "viewed"){
+	  json = JSON.parse(e.data.json);
       storeViewedItem(title, json)
+	}
     else if(message === "delete"){
       let transaction = db.transaction("Books", "readwrite")
       let objectStore = transaction.objectStore("Books")
