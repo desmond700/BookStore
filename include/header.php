@@ -3,8 +3,8 @@
 <head>
   <title><?php echo $pageTitle ?> - Book-Store</title>
   <meta charset="UTF-8">
-  <meta name="description" content="Free Web tutorials">
-  <meta name="keywords" content="HTML,CSS,XML,JavaScript">
+  <meta name="description" content="The best bookstore available">
+  <meta name="keywords" content="Technology, Science, Mathematics, Fiction, Non-Fiction">
   <meta name="author" content="Desmond Wallace">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/main.css" />
