@@ -165,8 +165,8 @@ button#sBtn{
   margin: 0 28px 0 28px;
 }
 
-#jumbotronID{
-  background-image: url("../images/homeBG.jpg");
+#aboutimg{
+  background-image: url("../images/pexels-photo-256541.jpg");
   background-repeat: no-repeat;
   background-size: cover;
 }
